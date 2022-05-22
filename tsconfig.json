@@ -6,15 +6,14 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "strictNullChecks": true,
-    "rootDirs": ["src", "__tests__"],
+    "rootDirs": ["src", "__tests__", "__mocks__"],
     "baseUrl": "src",
     "paths": {
-      "@/__tests__/*": ["../tests/*"],
       "@/*": [
         "*"
       ]
     }
   },
-  "include": ["src", "__tests__"],
+  "include": ["src", "__tests__", "__mocks__"],
   "exclude": []
 }

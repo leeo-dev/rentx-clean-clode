@@ -6,6 +6,7 @@ module.exports = {
     '.+\\.ts$': '@swc/jest'
   },
   moduleNameMapper: {
+    '@/__tests__/(.*)': '<rootDir>/__tests__/$1',
     '@/(.*)': '<rootDir>/src/$1'
   }
 }
