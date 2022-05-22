@@ -1,8 +1,9 @@
 import { Specification } from '@/domain/models/specification'
 import { AddSpecification, SpecificationParam } from '@/domain/protocols/add-specification'
-import { MissingParamError } from '@/presentation/error'
-import { badRequest, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
+import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
+import { badRequest, hasBeenCreated, serverError, forbidden } from '@/presentation/helpers/http-helper'
 import { AddSpecificationController } from '@/presentation/controllers/specifications/add-specification-controller'
+import { mockSpecification } from '@/../__mocks__/mock-specification'
 
 const mockAddSpecificationStub = (): AddSpecification => {
   class AddSpecificationStub implements AddSpecification {
@@ -62,18 +63,15 @@ describe('Add Specification Controller', () => {
   })
   test('should return 403 if specification already in use', async () => {
     const { sut, addSpecificationStub } = makeSut()
-    const addSpy = jest.spyOn(addSpecificationStub, 'add').mockResolvedValueOnce(Promise.resolve({ id: 'any_id', name: 'any_name', description: 'any_description', created_at: new Date() }))
+    jest.spyOn(addSpecificationStub, 'add').mockResolvedValueOnce(Promise.resolve(mockSpecification()))
     const httpRequest = {
       body: {
         name: 'any_name',
         description: 'any_description'
       }
     }
-    await sut.handle(httpRequest)
-    expect(addSpy).toHaveBeenCalledWith({
-      name: 'any_name',
-      description: 'any_description'
-    })
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(forbidden(new AlreadyInUseError('specification')))
   })
   test('should return if AddSpecification throw', async () => {
     const { sut, addSpecificationStub } = makeSut()
