@@ -1,11 +1,14 @@
+import { Specification } from '@/domain/models/specification'
 import { AddSpecification, SpecificationParam } from '@/domain/protocols/add-specification'
 import { MissingParamError } from '@/presentation/error'
 import { badRequest, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
-import { AddSpecificationController } from './add-specification-controller'
+import { AddSpecificationController } from '@/presentation/controllers/specifications/add-specification-controller'
 
 const mockAddSpecificationStub = (): AddSpecification => {
   class AddSpecificationStub implements AddSpecification {
-    async add (add: SpecificationParam): Promise<void> {}
+    async add (add: SpecificationParam): Promise<Specification | null> {
+      return null
+    }
   }
   return new AddSpecificationStub()
 }
@@ -45,6 +48,21 @@ describe('Add Specification Controller', () => {
   test('should calls AddSpecification UseCase with correct values', async () => {
     const { sut, addSpecificationStub } = makeSut()
     const addSpy = jest.spyOn(addSpecificationStub, 'add')
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        description: 'any_description'
+      }
+    }
+    await sut.handle(httpRequest)
+    expect(addSpy).toHaveBeenCalledWith({
+      name: 'any_name',
+      description: 'any_description'
+    })
+  })
+  test('should return 403 if specification already in use', async () => {
+    const { sut, addSpecificationStub } = makeSut()
+    const addSpy = jest.spyOn(addSpecificationStub, 'add').mockResolvedValueOnce(Promise.resolve({ id: 'any_id', name: 'any_name', description: 'any_description', created_at: new Date() }))
     const httpRequest = {
       body: {
         name: 'any_name',
