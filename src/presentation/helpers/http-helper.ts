@@ -5,3 +5,10 @@ export const badRequest = (error: Error): HttpResponse => {
     body: error
   }
 }
+
+export const hasBeenCreated = (): HttpResponse => {
+  return {
+    statusCode: 201,
+    body: null
+  }
+}
