@@ -5,6 +5,10 @@ import { HttpRequest, HttpResponse } from '@/presentation/protocols/http'
 
 export class AddSpecificationController implements Controller {
   handle (httpRequest: HttpRequest): HttpResponse {
+    const requiredFields = ['name', 'description']
+    for (const field of requiredFields) {
+      if (!httpRequest.body[field]) return badRequest(new MissingParamError(field))
+    }
     return badRequest(new MissingParamError('name'))
   }
 }
