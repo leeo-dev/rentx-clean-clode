@@ -1,6 +1,6 @@
 import { AddSpecification, SpecificationParam } from '@/domain/protocols/add-specification'
 import { MissingParamError } from '@/presentation/error'
-import { badRequest, hasBeenCreated } from '@/presentation/helpers/http-helper'
+import { badRequest, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
 import { AddSpecificationController } from './add-specification-controller'
 
 const mockAddSpecificationStub = (): AddSpecification => {
@@ -56,6 +56,20 @@ describe('Add Specification Controller', () => {
       name: 'any_name',
       description: 'any_description'
     })
+  })
+  test('should return if AddSpecification throw', async () => {
+    const { sut, addSpecificationStub } = makeSut()
+    jest.spyOn(addSpecificationStub, 'add').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        description: 'any_description'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(serverError(new Error()))
   })
   test('should return 201 on success', async () => {
     const { sut } = makeSut()
