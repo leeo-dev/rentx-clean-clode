@@ -1,1 +1,1 @@
-# rentx-clean-clode
+# rentx-clean-code
