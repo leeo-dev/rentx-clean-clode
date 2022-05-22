@@ -1,14 +1,26 @@
+import { AddSpecification, SpecificationParam } from '@/domain/protocols/add-specification'
 import { MissingParamError } from '@/presentation/error'
 import { badRequest } from '@/presentation/helpers/http-helper'
 import { AddSpecificationController } from './add-specification-controller'
 
+const mockAddSpecificationStub = (): AddSpecification => {
+  class AddSpecificationStub implements AddSpecification {
+    async add (add: SpecificationParam): Promise<void> {}
+  }
+  return new AddSpecificationStub()
+}
+
+const makeSut = (): SutTypes => {
+  const addSpecificationStub = mockAddSpecificationStub()
+  const sut = new AddSpecificationController(addSpecificationStub)
+  return { sut, addSpecificationStub }
+}
+
 type SutTypes = {
   sut: AddSpecificationController
+  addSpecificationStub: AddSpecification
 }
-const makeSut = (): SutTypes => {
-  const sut = new AddSpecificationController()
-  return { sut }
-}
+
 describe('Add Specification Controller', () => {
   test('should return 400 if no name is provided', async () => {
     const { sut } = makeSut()
@@ -29,5 +41,20 @@ describe('Add Specification Controller', () => {
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('description')))
+  })
+  test('should calls AddSpecification UseCase with correct values', async () => {
+    const { sut, addSpecificationStub } = makeSut()
+    const addSpy = jest.spyOn(addSpecificationStub, 'add')
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        description: 'any_description'
+      }
+    }
+    await sut.handle(httpRequest)
+    expect(addSpy).toHaveBeenCalledWith({
+      name: 'any_name',
+      description: 'any_description'
+    })
   })
 })
