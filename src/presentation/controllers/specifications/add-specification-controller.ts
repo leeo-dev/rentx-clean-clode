@@ -13,9 +13,8 @@ export class AddSpecificationController implements Controller {
         if (!httpRequest.body[field]) return badRequest(new MissingParamError(field))
       }
       const { name, description } = httpRequest.body
-      const isValid = await this.addSpecification.add({ name, description })
-      console.log(isValid)
-      if (isValid) return forbidden(new AlreadyInUseError('specification'))
+      const alreadyExists = await this.addSpecification.add({ name, description })
+      if (alreadyExists) return forbidden(new AlreadyInUseError('specification'))
       return hasBeenCreated()
     } catch (error) {
       return serverError(error)
