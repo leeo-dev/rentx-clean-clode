@@ -3,6 +3,8 @@ import { LoadSpecificationByNameRepository } from '@/data/protocols/load-specifi
 import { Specification } from '@/domain/models/specification'
 import mockDate from 'mockdate'
 import { mockSpecification } from '@/../__mocks__/mock-specification'
+import { SpecificationParam } from '@/domain/protocols/add-specification'
+import { AddSpecificationRepository } from '@/data/protocols/add-specification-repository'
 
 const mockLoadSpecificationByNameRepository = (): LoadSpecificationByNameRepository => {
   class LoadSpecificationByNameRepositoryStub implements LoadSpecificationByNameRepository {
@@ -13,15 +15,27 @@ const mockLoadSpecificationByNameRepository = (): LoadSpecificationByNameReposit
 
   return new LoadSpecificationByNameRepositoryStub()
 }
+
+const mockAddSpecificationRepositoryStub = (): AddSpecificationRepository => {
+  class LoadSpecificationByNameRepositoryStub implements AddSpecificationRepository {
+    async add (specificationParams: SpecificationParam): Promise<void> {
+    }
+  }
+
+  return new LoadSpecificationByNameRepositoryStub()
+}
+
 type SutTypes = {
   sut: DbAddSpecification
   loadSpecificationByNameRepositoryStub: LoadSpecificationByNameRepository
+  addSpecificationRepositoryStub: AddSpecificationRepository
 }
 
 const makeSut = (): SutTypes => {
   const loadSpecificationByNameRepositoryStub = mockLoadSpecificationByNameRepository()
-  const sut = new DbAddSpecification(loadSpecificationByNameRepositoryStub)
-  return { sut, loadSpecificationByNameRepositoryStub }
+  const addSpecificationRepositoryStub = mockAddSpecificationRepositoryStub()
+  const sut = new DbAddSpecification(loadSpecificationByNameRepositoryStub, addSpecificationRepositoryStub)
+  return { sut, loadSpecificationByNameRepositoryStub, addSpecificationRepositoryStub }
 }
 
 describe('DbAddSpecification UseCase', () => {
@@ -42,5 +56,11 @@ describe('DbAddSpecification UseCase', () => {
     jest.spyOn(loadSpecificationByNameRepositoryStub, 'loadByName').mockReturnValueOnce(Promise.resolve(mockSpecification()))
     const specification = await sut.add({ name: 'any_name', description: 'any_description' })
     expect(specification).toEqual(mockSpecification())
+  })
+  test('Should call AddSpecificationRepository with correct values', async () => {
+    const { sut, addSpecificationRepositoryStub } = makeSut()
+    const addSpy = jest.spyOn(addSpecificationRepositoryStub, 'add')
+    await sut.add({ name: 'any_name', description: 'any_description' })
+    expect(addSpy).toHaveBeenLastCalledWith({ name: 'any_name', description: 'any_description' })
   })
 })
