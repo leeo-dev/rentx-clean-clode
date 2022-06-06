@@ -68,4 +68,12 @@ describe('DbAddSpecification UseCase', () => {
     const isValid = await sut.add({ name: 'any_name', description: 'any_description' })
     expect(isValid).toBeNull()
   })
+  test('Should throw if AddSpecificationRepository throw', async () => {
+    const { sut, addSpecificationRepositoryStub } = makeSut()
+    jest.spyOn(addSpecificationRepositoryStub, 'add').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const promise = sut.add({ name: 'any_name', description: 'any_description' })
+    await expect(promise).rejects.toThrow()
+  })
 })
