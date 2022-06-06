@@ -76,4 +76,12 @@ describe('DbAddSpecification UseCase', () => {
     const promise = sut.add({ name: 'any_name', description: 'any_description' })
     await expect(promise).rejects.toThrow()
   })
+  test('Should throw if LoadSpecificationByNameRepository throw', async () => {
+    const { sut, loadSpecificationByNameRepositoryStub } = makeSut()
+    jest.spyOn(loadSpecificationByNameRepositoryStub, 'loadByName').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const promise = sut.add({ name: 'any_name', description: 'any_description' })
+    await expect(promise).rejects.toThrow()
+  })
 })
