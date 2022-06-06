@@ -63,4 +63,9 @@ describe('DbAddSpecification UseCase', () => {
     await sut.add({ name: 'any_name', description: 'any_description' })
     expect(addSpy).toHaveBeenLastCalledWith({ name: 'any_name', description: 'any_description' })
   })
+  test('Should return null on success', async () => {
+    const { sut } = makeSut()
+    const isValid = await sut.add({ name: 'any_name', description: 'any_description' })
+    expect(isValid).toBeNull()
+  })
 })
