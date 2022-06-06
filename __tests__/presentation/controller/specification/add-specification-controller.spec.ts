@@ -1,18 +1,8 @@
-import { Specification } from '@/domain/models/specification'
-import { AddSpecification, SpecificationParam } from '@/domain/protocols/add-specification'
+import { AddSpecification } from '@/domain/protocols/add-specification'
 import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
 import { badRequest, hasBeenCreated, serverError, forbidden } from '@/presentation/helpers/http-helper'
 import { AddSpecificationController } from '@/presentation/controllers/specifications/add-specification-controller'
-import { mockSpecification } from '@/../__mocks__/mock-specification'
-
-const mockAddSpecificationStub = (): AddSpecification => {
-  class AddSpecificationStub implements AddSpecification {
-    async add (add: SpecificationParam): Promise<Specification | null> {
-      return null
-    }
-  }
-  return new AddSpecificationStub()
-}
+import { mockAddSpecificationStub, mockSpecification } from '@/../__mocks__/mock-specification'
 
 const makeSut = (): SutTypes => {
   const addSpecificationStub = mockAddSpecificationStub()

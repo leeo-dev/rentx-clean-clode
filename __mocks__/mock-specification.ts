@@ -1,5 +1,5 @@
 import { Specification } from '@/domain/models/specification'
-import { SpecificationParam } from '@/domain/protocols/add-specification'
+import { AddSpecification, SpecificationParam } from '@/domain/protocols/add-specification'
 export const mockSpecification = (): Specification => ({
   id: 'any_id',
   name: 'any_name',
@@ -11,3 +11,12 @@ export const mockSpecificationParam = (): SpecificationParam => ({
   name: 'any_name',
   description: 'any_description'
 })
+
+export const mockAddSpecificationStub = (): AddSpecification => {
+  class AddSpecificationStub implements AddSpecification {
+    async add (add: SpecificationParam): Promise<Specification | null> {
+      return null
+    }
+  }
+  return new AddSpecificationStub()
+}

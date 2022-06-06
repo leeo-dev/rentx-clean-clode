@@ -6,6 +6,6 @@ export type SpecificationParam = {
 }
 
 export interface AddSpecification {
-  add: (add: SpecificationParam) => Promise<Specification | null>
+  add: (specificationParams: SpecificationParam) => Promise<Specification | null>
 
 }
