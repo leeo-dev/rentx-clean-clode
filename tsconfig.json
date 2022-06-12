@@ -2,9 +2,10 @@
   "compilerOptions": {
     "outDir": "dist",
     "module": "commonjs",
-    "target": "es2019",
+    "target": "ES2021",
     "esModuleInterop": true,
     "sourceMap": true,
+    "strict": true,
     "strictNullChecks": true,
     "rootDirs": ["src", "__tests__", "__mocks__"],
     "baseUrl": "src",
@@ -15,5 +16,5 @@
     }
   },
   "include": ["src", "__tests__", "__mocks__"],
-  "exclude": []
+  "exclude": ["__tests__", "__mocks__"]
 }

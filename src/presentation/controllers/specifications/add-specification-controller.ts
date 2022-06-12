@@ -16,7 +16,7 @@ export class AddSpecificationController implements Controller {
       const alreadyExists = await this.addSpecification.add({ name, description })
       if (alreadyExists) return forbidden(new AlreadyInUseError('specification'))
       return hasBeenCreated()
-    } catch (error) {
+    } catch (error: any) {
       return serverError(error)
     }
   }

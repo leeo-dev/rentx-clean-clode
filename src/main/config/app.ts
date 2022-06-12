@@ -1,2 +1,5 @@
 import express from 'express'
-export const app = express()
+import setupMiddleware from './middlewares'
+const app = express()
+setupMiddleware(app)
+export { app }
