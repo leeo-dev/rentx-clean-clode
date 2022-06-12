@@ -8,7 +8,6 @@ export class DbAddSpecification implements AddSpecification {
   async add ({ name, description }: SpecificationParam): Promise<Specification | null> {
     const specification = await this.loadSpecificationByNameRepository.loadByName(name)
     if (specification) return specification
-    console.log(specification)
     await this.addSpecificationRepository.add({ name, description })
     return null
   }

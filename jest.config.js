@@ -1,7 +1,8 @@
 module.exports = {
   roots: ['<rootDir>/__tests__'],
-  collectCoverageFrom: ['<rootDir>/__tests__/**/*.ts', '!<rootDir>/src/**/index.ts'],
+  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/**/index.ts', '!<rootDir>/src/**/*error.ts'],
   testEnvironment: 'node',
+  preset: '@shelf/jest-mongodb',
   transform: {
     '.+\\.ts$': '@swc/jest'
   },
