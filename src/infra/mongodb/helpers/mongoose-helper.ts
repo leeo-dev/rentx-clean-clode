@@ -6,5 +6,9 @@ export const MongooseHelper = {
   },
   async disconnectDb () {
     await this.client.disconnect()
+  },
+  map (data: any): any {
+    const { _id, ...collectionWithoutId } = data?._doc
+    return Object.assign({}, collectionWithoutId, { id: String(_id) })
   }
 }

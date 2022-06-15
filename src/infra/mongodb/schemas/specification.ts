@@ -9,4 +9,4 @@ const specificationSchema = new Schema<SpecificationSchema>({
   description: { type: String, required: true }
 })
 
-export const Specification = model<SpecificationSchema>('Specification', specificationSchema)
+export const SpecificationMongo = model<SpecificationSchema>('Specification', specificationSchema)
