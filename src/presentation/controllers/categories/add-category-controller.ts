@@ -4,6 +4,13 @@ import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
 export class AddCategoryController implements Controller {
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    return badRequest(new MissingParamError('name'))
+    const requiredFields = ['name', 'description']
+    for (const field of requiredFields) {
+      if (!httpRequest.body[field]) return badRequest(new MissingParamError(field))
+    }
+    return {
+      statusCode: 200,
+      body: null
+    }
   }
 }
