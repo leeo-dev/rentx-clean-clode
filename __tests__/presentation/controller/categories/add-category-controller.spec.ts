@@ -2,7 +2,7 @@ import { Category } from '@/domain/models/category'
 import { AddCategory, CategoryParam } from '@/domain/protocols/add-category'
 import { AddCategoryController } from '@/presentation/controllers/categories/add-category-controller'
 import { MissingParamError } from '@/presentation/error'
-import { badRequest } from '@/presentation/helpers/http-helper'
+import { badRequest, serverError } from '@/presentation/helpers/http-helper'
 
 const mockAddCategory = (): AddCategory => {
   class AddCategoryStub implements AddCategory {
@@ -60,5 +60,19 @@ describe('Add Category Controller', () => {
       name: 'any_name',
       description: 'any_description'
     })
+  })
+  test('should return 500 if AddCategory throw', async () => {
+    const { sut, addCategoryStub } = makeSut()
+    jest.spyOn(addCategoryStub, 'add').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        description: 'any_description'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(serverError(new Error()))
   })
 })
