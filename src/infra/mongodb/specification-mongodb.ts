@@ -13,9 +13,6 @@ export class SpecificationMongoDb implements LoadSpecificationByNameRepository, 
 
   async loadByName (name: string): Promise<Specification | null> {
     const specification = await SpecificationMongo.findOne({ name })
-    console.log('------------------------')
-    console.log(specification)
-    console.log('------------------------')
     return specification && MongooseHelper.map(specification)
   }
 }
