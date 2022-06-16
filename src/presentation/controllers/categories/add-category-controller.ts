@@ -1,6 +1,6 @@
 import { AddCategory } from '@/domain/protocols/add-category'
-import { MissingParamError } from '@/presentation/error'
-import { badRequest, serverError } from '@/presentation/helpers/http-helper'
+import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
+import { badRequest, forbidden, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
 export class AddCategoryController implements Controller {
@@ -12,7 +12,8 @@ export class AddCategoryController implements Controller {
         if (!httpRequest.body[field]) return badRequest(new MissingParamError(field))
       }
       const { name, description } = httpRequest.body
-      await this.addCategory.add({ name, description })
+      const isCategoryAlreadyExists = await this.addCategory.add({ name, description })
+      if (isCategoryAlreadyExists) return forbidden(new AlreadyInUseError('Category'))
       return {
         statusCode: 200,
         body: null
