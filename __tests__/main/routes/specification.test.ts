@@ -16,4 +16,12 @@ describe('Specification Router', () => {
       .send({ name: 'any_name', description: 'any_description' })
       .expect(201)
   })
+  test('Should return 400 if specification already exists', async () => {
+    const newSpecification = new SpecificationMongo({ name: 'any_name', description: 'any_description' })
+    await newSpecification.save()
+    await request(app)
+      .post('/api/specifications')
+      .send({ name: 'any_name', description: 'any_description' })
+      .expect(403)
+  })
 })
