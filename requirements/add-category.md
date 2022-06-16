@@ -3,8 +3,8 @@
 > ## Caso de sucesso
 
 1. [] Receive a request type **POST** in route **/api/signup**
-2. [] Validate required data **name** and **description**
-3. [] Returns **201** with no data
+2. [x] Validate required data **name** and **description**
+3. [x] Returns **201** with no data
 
 > ## Exceções
 

@@ -1,6 +1,6 @@
 import { AddCategory } from '@/domain/protocols/add-category'
 import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
-import { badRequest, forbidden, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, forbidden, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
 export class AddCategoryController implements Controller {
@@ -14,10 +14,7 @@ export class AddCategoryController implements Controller {
       const { name, description } = httpRequest.body
       const isCategoryAlreadyExists = await this.addCategory.add({ name, description })
       if (isCategoryAlreadyExists) return forbidden(new AlreadyInUseError('Category'))
-      return {
-        statusCode: 200,
-        body: null
-      }
+      return hasBeenCreated()
     } catch (error: any) {
       return serverError(error)
     }
