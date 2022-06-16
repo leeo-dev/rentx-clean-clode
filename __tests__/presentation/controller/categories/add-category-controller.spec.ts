@@ -2,7 +2,7 @@ import { mockAddCategory, mockCategory } from '@/../__mocks__/mock-categories'
 import { AddCategory } from '@/domain/protocols/add-category'
 import { AddCategoryController } from '@/presentation/controllers/categories/add-category-controller'
 import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
-import { badRequest, forbidden, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, forbidden, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
 
 type SutTypes = {
   sut: AddCategoryController
@@ -76,5 +76,16 @@ describe('Add Category Controller', () => {
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(forbidden(new AlreadyInUseError('Category')))
+  })
+  test('should return 201 on success', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        description: 'any_description'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(hasBeenCreated())
   })
 })
