@@ -6,7 +6,9 @@ export class DbAddCategory implements AddCategory {
   constructor (private readonly loadCategoryByNameRepository: LoadCategoryByNameRepository) {}
   async add (categoryParams: CategoryParam): Promise<Category | null> {
     const { name } = categoryParams
-    await this.loadCategoryByNameRepository.loadByName(name)
+    const category = await this.loadCategoryByNameRepository.loadByName(name)
+    console.log(category)
+    if (category) return category
     return null
   }
 }
