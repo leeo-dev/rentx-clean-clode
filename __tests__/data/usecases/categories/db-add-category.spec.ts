@@ -2,6 +2,8 @@ import { mockCategory, mockCategoryParam } from '@/../__mocks__/mock-categories'
 import { LoadCategoryByNameRepository } from '@/data/protocols/load-category-by-name-repository'
 import { Category } from '@/domain/models/category'
 import { DbAddCategory } from '@/data/usecases/db-add-category'
+import { CategoryParam } from '@/domain/protocols/add-category'
+import { AddCategoryRepository } from '@/data/protocols/add-category-repository'
 import mockDate from 'mockdate'
 
 const mockLoadCategoryByNameRepository = (): LoadCategoryByNameRepository => {
@@ -14,15 +16,26 @@ const mockLoadCategoryByNameRepository = (): LoadCategoryByNameRepository => {
   return new LoadCategoryByNameRepositoryStub()
 }
 
+const mockAddCategoryRepository = (): AddCategoryRepository => {
+  class AddCategoryRepositoryStub implements AddCategoryRepository {
+    async add (category: CategoryParam): Promise<void> {
+    }
+  }
+
+  return new AddCategoryRepositoryStub()
+}
+
 type SutTypes = {
   sut: DbAddCategory
   loadCategoryByNameRepositoryStub: LoadCategoryByNameRepository
+  addCategoryRepositoryStub: AddCategoryRepository
 }
 
 const makeSut = (): SutTypes => {
   const loadCategoryByNameRepositoryStub = mockLoadCategoryByNameRepository()
-  const sut = new DbAddCategory(loadCategoryByNameRepositoryStub)
-  return { sut, loadCategoryByNameRepositoryStub }
+  const addCategoryRepositoryStub = mockAddCategoryRepository()
+  const sut = new DbAddCategory(loadCategoryByNameRepositoryStub, addCategoryRepositoryStub)
+  return { sut, loadCategoryByNameRepositoryStub, addCategoryRepositoryStub }
 }
 
 describe('Db Add Category', () => {
@@ -43,5 +56,11 @@ describe('Db Add Category', () => {
     jest.spyOn(loadCategoryByNameRepositoryStub, 'loadByName').mockReturnValueOnce(Promise.resolve(mockCategory()))
     const result = await sut.add(mockCategoryParam())
     expect(result).toEqual(mockCategory())
+  })
+  test('should call AddCategoryRepository with correct values', async () => {
+    const { sut, addCategoryRepositoryStub } = makeSut()
+    const addSpy = jest.spyOn(addCategoryRepositoryStub, 'add')
+    await sut.add(mockCategoryParam())
+    expect(addSpy).toHaveBeenCalledWith(mockCategoryParam())
   })
 })
