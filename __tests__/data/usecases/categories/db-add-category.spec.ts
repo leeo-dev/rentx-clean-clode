@@ -63,4 +63,12 @@ describe('Db Add Category', () => {
     await sut.add(mockCategoryParam())
     expect(addSpy).toHaveBeenCalledWith(mockCategoryParam())
   })
+  test('should throw if AddCategoryRepository throws', async () => {
+    const { sut, addCategoryRepositoryStub } = makeSut()
+    jest.spyOn(addCategoryRepositoryStub, 'add').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const promise = sut.add(mockCategoryParam())
+    await expect(promise).rejects.toThrow()
+  })
 })
