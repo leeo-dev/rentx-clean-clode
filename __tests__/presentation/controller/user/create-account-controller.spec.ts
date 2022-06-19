@@ -1,13 +1,25 @@
 import { CreateAccountController } from '@/presentation/controllers/account/create-account-controller'
-import { MissingParamError } from '@/presentation/error'
+import { MissingParamError } from '@/presentation/errors'
 import { badRequest } from '@/presentation/helpers/http-helper'
+import { EmailValidator } from '@/presentation/protocols/email-validator'
+
+const mockEmailValidator = (): EmailValidator => {
+  class EmailValidatorStub implements EmailValidator {
+    async validate (email: string): Promise<Boolean> {
+      return true
+    }
+  }
+  return new EmailValidatorStub()
+}
 
 type SutTypes = {
   sut: CreateAccountController
+  emailValidatorAdapterStub: EmailValidator
 }
 const makeSut = (): SutTypes => {
-  const sut = new CreateAccountController()
-  return { sut }
+  const emailValidatorAdapterStub = mockEmailValidator()
+  const sut = new CreateAccountController(emailValidatorAdapterStub)
+  return { sut, emailValidatorAdapterStub }
 }
 describe('Create Account Controller', () => {
   test('should return 400 if no name is provided', async () => {
@@ -57,5 +69,19 @@ describe('Create Account Controller', () => {
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('drive_license')))
+  })
+  test('should call EmailValidatorAdapter with correct email', async () => {
+    const { sut, emailValidatorAdapterStub } = makeSut()
+    const validateSpy = jest.spyOn(emailValidatorAdapterStub, 'validate')
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        email: 'any_email@mail.com',
+        drive_license: 'any_drive_license'
+      }
+    }
+    await sut.handle(httpRequest)
+    expect(validateSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
 })
