@@ -23,4 +23,17 @@ describe('Create Account Controller', () => {
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('name')))
   })
+  test('should return 400 if no password is provided', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'email',
+        drive_license: 'any_drive_license',
+        avatar: 'any_avatar'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(badRequest(new MissingParamError('password')))
+  })
 })
