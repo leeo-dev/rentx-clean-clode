@@ -1,5 +1,5 @@
 import { AddCategory } from '@/domain/protocols/add-category'
-import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
+import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
 import { badRequest, forbidden, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 

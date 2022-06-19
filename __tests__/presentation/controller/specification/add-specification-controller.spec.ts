@@ -1,5 +1,5 @@
 import { AddSpecification } from '@/domain/protocols/add-specification'
-import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
+import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
 import { badRequest, hasBeenCreated, serverError, forbidden } from '@/presentation/helpers/http-helper'
 import { AddSpecificationController } from '@/presentation/controllers/specifications/add-specification-controller'
 import { mockAddSpecificationStub, mockSpecification } from '@/../__mocks__/mock-specification'

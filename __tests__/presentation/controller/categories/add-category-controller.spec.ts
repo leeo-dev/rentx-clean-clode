@@ -1,7 +1,7 @@
 import { mockAddCategory, mockCategory } from '@/../__mocks__/mock-categories'
 import { AddCategory } from '@/domain/protocols/add-category'
 import { AddCategoryController } from '@/presentation/controllers/categories/add-category-controller'
-import { AlreadyInUseError, MissingParamError } from '@/presentation/error'
+import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
 import { badRequest, forbidden, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
 
 type SutTypes = {
