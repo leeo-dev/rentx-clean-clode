@@ -16,8 +16,7 @@ describe('Create Account Controller', () => {
       body: {
         password: 'any_password',
         email: 'any_email',
-        drive_license: 'any_drive_license',
-        avatar: 'any_avatar'
+        drive_license: 'any_drive_license'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
@@ -29,8 +28,7 @@ describe('Create Account Controller', () => {
       body: {
         name: 'any_name',
         email: 'any_email',
-        drive_license: 'any_drive_license',
-        avatar: 'any_avatar'
+        drive_license: 'any_drive_license'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
@@ -42,11 +40,22 @@ describe('Create Account Controller', () => {
       body: {
         name: 'any_name',
         password: 'any_password',
-        drive_license: 'any_drive_license',
-        avatar: 'any_avatar'
+        drive_license: 'any_drive_license'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('email')))
+  })
+  test('should return 400 if no drive license is provided', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        email: 'any_email'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(badRequest(new MissingParamError('drive_license')))
   })
 })
