@@ -3,6 +3,7 @@ import { CreateAccountController } from '@/presentation/controllers/account/crea
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest } from '@/presentation/helpers/http-helper'
 import { EmailValidator } from '@/presentation/protocols/email-validator'
+import { AccountParam, DbCreateAccount } from '@/domain/protocols/create-account'
 
 const mockEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
@@ -13,14 +14,24 @@ const mockEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub()
 }
 
+const mockDbCreateAccount = (): DbCreateAccount => {
+  class DbCreateAccountStub implements DbCreateAccount {
+    async create (accountParam: AccountParam): Promise<void> {
+    }
+  }
+  return new DbCreateAccountStub()
+}
+
 type SutTypes = {
   sut: CreateAccountController
   emailValidatorAdapterStub: EmailValidator
+  dbCreateAccountStub: DbCreateAccount
 }
 const makeSut = (): SutTypes => {
   const emailValidatorAdapterStub = mockEmailValidator()
-  const sut = new CreateAccountController(emailValidatorAdapterStub)
-  return { sut, emailValidatorAdapterStub }
+  const dbCreateAccountStub = mockDbCreateAccount()
+  const sut = new CreateAccountController(emailValidatorAdapterStub, dbCreateAccountStub)
+  return { sut, emailValidatorAdapterStub, dbCreateAccountStub }
 }
 describe('Create Account Controller', () => {
   test('should return 400 if no name is provided', async () => {
@@ -29,7 +40,7 @@ describe('Create Account Controller', () => {
       body: {
         password: 'any_password',
         email: 'any_email',
-        drive_license: 'any_drive_license'
+        driveLicense: 'any_driveLicense'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
@@ -41,7 +52,7 @@ describe('Create Account Controller', () => {
       body: {
         name: 'any_name',
         email: 'any_email',
-        drive_license: 'any_drive_license'
+        driveLicense: 'any_driveLicense'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
@@ -53,7 +64,7 @@ describe('Create Account Controller', () => {
       body: {
         name: 'any_name',
         password: 'any_password',
-        drive_license: 'any_drive_license'
+        driveLicense: 'any_driveLicense'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
@@ -69,7 +80,7 @@ describe('Create Account Controller', () => {
       }
     }
     const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual(badRequest(new MissingParamError('drive_license')))
+    expect(httpResponse).toEqual(badRequest(new MissingParamError('driveLicense')))
   })
   test('should call EmailValidatorAdapter with correct email', async () => {
     const { sut, emailValidatorAdapterStub } = makeSut()
@@ -79,7 +90,7 @@ describe('Create Account Controller', () => {
         name: 'any_name',
         password: 'any_password',
         email: 'any_email@mail.com',
-        drive_license: 'any_drive_license'
+        driveLicense: 'any_driveLicense'
       }
     }
     await sut.handle(httpRequest)
@@ -93,10 +104,24 @@ describe('Create Account Controller', () => {
         name: 'any_name',
         password: 'any_password',
         email: 'invalid_email@mail.com',
-        drive_license: 'any_drive_license'
+        driveLicense: 'any_driveLicense'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new InvalidParamError('email')))
+  })
+  test('should call DbCreateAccount with correct values', async () => {
+    const { sut, dbCreateAccountStub } = makeSut()
+    const createSpy = jest.spyOn(dbCreateAccountStub, 'create')
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        email: 'any_email@mail.com',
+        driveLicense: 'any_driveLicense'
+      }
+    }
+    await sut.handle(httpRequest)
+    expect(createSpy).toHaveBeenCalledWith(httpRequest.body)
   })
 })
