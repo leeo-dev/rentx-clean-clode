@@ -1,9 +1,11 @@
 import { InvalidParamError } from '@/presentation/errors/invalid-param-error'
 import { CreateAccountController } from '@/presentation/controllers/account/create-account-controller'
-import { MissingParamError } from '@/presentation/errors'
+import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
 import { badRequest } from '@/presentation/helpers/http-helper'
 import { EmailValidator } from '@/presentation/protocols/email-validator'
 import { AccountParam, DbCreateAccount } from '@/domain/protocols/create-account'
+import { Account } from '@/domain/models/account'
+import { mockAccount } from '@/../__mocks__/mock-account'
 
 const mockEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
@@ -16,7 +18,8 @@ const mockEmailValidator = (): EmailValidator => {
 
 const mockDbCreateAccount = (): DbCreateAccount => {
   class DbCreateAccountStub implements DbCreateAccount {
-    async create (accountParam: AccountParam): Promise<void> {
+    async create (accountParam: AccountParam): Promise<Account | null> {
+      return null
     }
   }
   return new DbCreateAccountStub()
@@ -123,5 +126,19 @@ describe('Create Account Controller', () => {
     }
     await sut.handle(httpRequest)
     expect(createSpy).toHaveBeenCalledWith(httpRequest.body)
+  })
+  test('should return 400 if DbCreateAccount returns an account in use', async () => {
+    const { sut, dbCreateAccountStub } = makeSut()
+    jest.spyOn(dbCreateAccountStub, 'create').mockReturnValueOnce(Promise.resolve(mockAccount()))
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        email: 'any_email@mail.com',
+        driveLicense: 'any_driveLicense'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(badRequest(new AlreadyInUseError('email')))
   })
 })
