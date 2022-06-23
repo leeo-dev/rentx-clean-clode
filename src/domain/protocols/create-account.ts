@@ -1,3 +1,5 @@
+import { Account } from '../models/account'
+
 export type AccountParam = {
   name: string
   password: string
@@ -5,5 +7,5 @@ export type AccountParam = {
   driveLicense: string
 }
 export interface DbCreateAccount {
-  create: (accountParam: AccountParam) => Promise<void>
+  create: (accountParam: AccountParam) => Promise<Account | null>
 }
