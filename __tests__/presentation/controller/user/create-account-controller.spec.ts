@@ -113,6 +113,22 @@ describe('Create Account Controller', () => {
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new InvalidParamError('email')))
   })
+  test('should return 500 if EmailValidator throws', async () => {
+    const { sut, emailValidatorAdapterStub } = makeSut()
+    jest.spyOn(emailValidatorAdapterStub, 'validate').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        email: 'any_email@mail.com',
+        driveLicense: 'any_driveLicense'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(serverError(new Error()))
+  })
   test('should call DbCreateAccount with correct values', async () => {
     const { sut, dbCreateAccountStub } = makeSut()
     const createSpy = jest.spyOn(dbCreateAccountStub, 'create')
