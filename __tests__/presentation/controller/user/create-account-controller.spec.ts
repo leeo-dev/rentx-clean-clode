@@ -1,7 +1,7 @@
 import { InvalidParamError } from '@/presentation/errors/invalid-param-error'
 import { CreateAccountController } from '@/presentation/controllers/account/create-account-controller'
 import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
-import { badRequest, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, serverError, hasBeenCreated } from '@/presentation/helpers/http-helper'
 import { EmailValidator } from '@/presentation/protocols/email-validator'
 import { AccountParam, DbCreateAccount } from '@/domain/protocols/create-account'
 import { Account } from '@/domain/models/account'
@@ -172,5 +172,18 @@ describe('Create Account Controller', () => {
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(serverError(new Error()))
+  })
+  test('should return 201 on success', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        email: 'any_email@mail.com',
+        driveLicense: 'any_driveLicense'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(hasBeenCreated())
   })
 })
