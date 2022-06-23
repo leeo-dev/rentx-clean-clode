@@ -1,7 +1,7 @@
 import { DbCreateAccount } from '@/domain/protocols/create-account'
 import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
 import { InvalidParamError } from '@/presentation/errors/invalid-param-error'
-import { badRequest, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { EmailValidator } from '@/presentation/protocols/email-validator'
 
@@ -21,7 +21,7 @@ export class CreateAccountController implements Controller {
       if (!isEmailValid) return badRequest(new InvalidParamError('email'))
       const isEmailAlreadyInUse = await this.dbCreateAccount.create({ name, email, driveLicense, password })
       if (isEmailAlreadyInUse) return badRequest(new AlreadyInUseError('email'))
-      return badRequest(new MissingParamError('name'))
+      return hasBeenCreated()
     } catch (error: any) {
       return serverError(error)
     }
