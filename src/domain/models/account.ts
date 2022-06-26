@@ -3,7 +3,7 @@ export type Account = {
   name: string
   password: string
   email: string
-  drive_license: string
+  driveLicense: string
   admin: boolean
   avatar: string
   created_at: Date

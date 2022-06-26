@@ -1,4 +1,4 @@
-import { DbCreateAccount } from '@/domain/protocols/create-account'
+import { CreateAccount } from '@/domain/protocols/create-account'
 import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
 import { InvalidParamError } from '@/presentation/errors/invalid-param-error'
 import { badRequest, hasBeenCreated, serverError } from '@/presentation/helpers/http-helper'
@@ -7,7 +7,7 @@ import { EmailValidator } from '@/presentation/protocols/email-validator'
 
 export class CreateAccountController implements Controller {
   constructor (private readonly emailValidator: EmailValidator,
-    private readonly dbCreateAccount: DbCreateAccount
+    private readonly dbCreateAccount: CreateAccount
   ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {

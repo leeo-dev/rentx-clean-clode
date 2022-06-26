@@ -6,6 +6,6 @@ export type AccountParam = {
   email: string
   driveLicense: string
 }
-export interface DbCreateAccount {
+export interface CreateAccount {
   create: (accountParam: AccountParam) => Promise<Account | null>
 }
