@@ -5,7 +5,8 @@ export class DbCreateAccount implements CreateAccount {
   constructor (private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository) {}
   async create (accountParam: AccountParam): Promise<Account | null> {
     const { email } = accountParam
-    await this.loadAccountByEmailRepository.loadByEmail(email)
+    const account = await this.loadAccountByEmailRepository.loadByEmail(email)
+    if (account) return account
     return null
   }
 }
