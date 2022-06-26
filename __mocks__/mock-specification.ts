@@ -1,3 +1,4 @@
+import { HttpRequest } from './../src/presentation/protocols/http'
 import { Specification } from '@/domain/models/specification'
 import { AddSpecification, SpecificationParam } from '@/domain/protocols/add-specification'
 export const mockSpecification = (): Specification => ({
@@ -20,3 +21,10 @@ export const mockAddSpecificationStub = (): AddSpecification => {
   }
   return new AddSpecificationStub()
 }
+
+export const httpSpecificationRequest = (): HttpRequest => ({
+  body: {
+    name: 'any_name',
+    description: 'any_description'
+  }
+})

@@ -1,4 +1,5 @@
-import { mockAddCategory, mockCategory } from '@/../__mocks__/mock-categories'
+import { mockError } from '@/../__mocks__/mockError'
+import { mockAddCategory, mockCategory, httpCategoryRequest } from '@/../__mocks__/mock-categories'
 import { AddCategory } from '@/domain/protocols/add-category'
 import { AddCategoryController } from '@/presentation/controllers/categories/add-category-controller'
 import { AlreadyInUseError, MissingParamError } from '@/presentation/errors'
@@ -39,53 +40,24 @@ describe('Add Category Controller', () => {
   test('should call AddCategory with correct values', async () => {
     const { sut, addCategoryStub } = makeSut()
     const addSpy = jest.spyOn(addCategoryStub, 'add')
-    const httpRequest = {
-      body: {
-        name: 'any_name',
-        description: 'any_description'
-      }
-    }
-    await sut.handle(httpRequest)
-    expect(addSpy).toHaveBeenCalledWith({
-      name: 'any_name',
-      description: 'any_description'
-    })
+    await sut.handle(httpCategoryRequest())
+    expect(addSpy).toHaveBeenCalledWith(httpCategoryRequest().body)
   })
   test('should return 500 if AddCategory throw', async () => {
     const { sut, addCategoryStub } = makeSut()
-    jest.spyOn(addCategoryStub, 'add').mockImplementationOnce(() => {
-      throw new Error()
-    })
-    const httpRequest = {
-      body: {
-        name: 'any_name',
-        description: 'any_description'
-      }
-    }
-    const httpResponse = await sut.handle(httpRequest)
+    jest.spyOn(addCategoryStub, 'add').mockImplementationOnce(mockError)
+    const httpResponse = await sut.handle(httpCategoryRequest())
     expect(httpResponse).toEqual(serverError(new Error()))
   })
   test('should return 403 is category is already in use', async () => {
     const { sut, addCategoryStub } = makeSut()
     jest.spyOn(addCategoryStub, 'add').mockReturnValueOnce(Promise.resolve(mockCategory()))
-    const httpRequest = {
-      body: {
-        name: 'any_name',
-        description: 'any_description'
-      }
-    }
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(httpCategoryRequest())
     expect(httpResponse).toEqual(forbidden(new AlreadyInUseError('Category')))
   })
   test('should return 201 on success', async () => {
     const { sut } = makeSut()
-    const httpRequest = {
-      body: {
-        name: 'any_name',
-        description: 'any_description'
-      }
-    }
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(httpCategoryRequest())
     expect(httpResponse).toEqual(hasBeenCreated())
   })
 })
