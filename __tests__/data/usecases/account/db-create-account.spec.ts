@@ -2,6 +2,7 @@ import { DbCreateAccount } from '@/data/usecases/db-create-account'
 import { mockLoadAccountByEmailRepository, mockAccountParam, mockAccount, mockCreateAccountRepository } from '@/../__mocks__/mock-account'
 import { LoadAccountByEmailRepository } from '@/data/protocols/load-account-by-email-repository'
 import { CreateAccountRepository } from '@/data/protocols/create-account-repository'
+import { mockError } from '@/../__mocks__/mockError'
 
 type SutTypes = {
   sut: DbCreateAccount
@@ -28,6 +29,12 @@ describe('DbCreateAccount', () => {
     jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(mockAccount()))
     const isAccountInUse = await sut.create(mockAccountParam())
     expect(isAccountInUse).toEqual(mockAccount())
+  })
+  test('should throw if LoadAccountByEmailRepository throws', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockImplementationOnce(mockError)
+    const promise = sut.create(mockAccountParam())
+    await expect(promise).rejects.toThrow()
   })
   test('should call CreateAccountRepository with correct values', async () => {
     const { sut, createAccountRepositoryStub } = makeSut()
