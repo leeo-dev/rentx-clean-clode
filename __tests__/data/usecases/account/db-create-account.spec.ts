@@ -1,16 +1,19 @@
 import { DbCreateAccount } from '@/data/usecases/db-create-account'
-import { mockLoadAccountByEmailRepository, mockAccountParam, mockAccount } from '@/../__mocks__/mock-account'
+import { mockLoadAccountByEmailRepository, mockAccountParam, mockAccount, mockCreateAccountRepository } from '@/../__mocks__/mock-account'
 import { LoadAccountByEmailRepository } from '@/data/protocols/load-account-by-email-repository'
+import { CreateAccountRepository } from '@/data/protocols/create-account-repository'
 
 type SutTypes = {
   sut: DbCreateAccount
   loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
+  createAccountRepositoryStub: CreateAccountRepository
 }
 
 const makeSut = (): SutTypes => {
+  const createAccountRepositoryStub = mockCreateAccountRepository()
   const loadAccountByEmailRepositoryStub = mockLoadAccountByEmailRepository()
-  const sut = new DbCreateAccount(loadAccountByEmailRepositoryStub)
-  return { sut, loadAccountByEmailRepositoryStub }
+  const sut = new DbCreateAccount(loadAccountByEmailRepositoryStub, createAccountRepositoryStub)
+  return { sut, loadAccountByEmailRepositoryStub, createAccountRepositoryStub }
 }
 
 describe('DbCreateAccount', () => {
@@ -25,5 +28,11 @@ describe('DbCreateAccount', () => {
     jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(mockAccount()))
     const isAccountInUse = await sut.create(mockAccountParam())
     expect(isAccountInUse).toEqual(mockAccount())
+  })
+  test('should call CreateAccountRepository with correct values', async () => {
+    const { sut, createAccountRepositoryStub } = makeSut()
+    const createSpy = jest.spyOn(createAccountRepositoryStub, 'create')
+    await sut.create(mockAccountParam())
+    expect(createSpy).toHaveBeenCalledWith(mockAccountParam())
   })
 })
