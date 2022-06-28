@@ -3,6 +3,7 @@ import { mockLoadAccountByEmailRepository, mockAccountParam, mockAccount, mockCr
 import { LoadAccountByEmailRepository } from '@/data/protocols/load-account-by-email-repository'
 import { CreateAccountRepository } from '@/data/protocols/create-account-repository'
 import { mockError } from '@/../__mocks__/mockError'
+import mockDate from 'mockdate'
 
 type SutTypes = {
   sut: DbCreateAccount
@@ -18,6 +19,12 @@ const makeSut = (): SutTypes => {
 }
 
 describe('DbCreateAccount', () => {
+  beforeAll(async () => {
+    mockDate.set(new Date())
+  })
+  afterAll(async () => {
+    mockDate.reset()
+  })
   test('should call loadByEmail with correct email', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     const loadByEmailSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
@@ -41,5 +48,11 @@ describe('DbCreateAccount', () => {
     const createSpy = jest.spyOn(createAccountRepositoryStub, 'create')
     await sut.create(mockAccountParam())
     expect(createSpy).toHaveBeenCalledWith(mockAccountParam())
+  })
+  test('should throw if CreateAccountRepository throws', async () => {
+    const { sut, createAccountRepositoryStub } = makeSut()
+    jest.spyOn(createAccountRepositoryStub, 'create').mockImplementationOnce(mockError)
+    const promise = sut.create(mockAccountParam())
+    await expect(promise).rejects.toThrow()
   })
 })
