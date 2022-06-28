@@ -3,6 +3,7 @@ import { EmailValidator } from '@/presentation/protocols/email-validator'
 import { HttpRequest } from '@/presentation/protocols'
 import { Account } from '@/domain/models/account'
 import { LoadAccountByEmailRepository } from './data/protocols/load-account-by-email-repository'
+import { CreateAccountRepository } from '@/data/protocols/create-account-repository'
 
 export const mockAccount = (): Account => (
   {
@@ -62,4 +63,11 @@ export const mockLoadAccountByEmailRepository = (): LoadAccountByEmailRepository
     }
   }
   return new LoadAccountByEmailRepositoryStub()
+}
+
+export const mockCreateAccountRepository = (): CreateAccountRepository => {
+  class CreateAccountRepositoryStub implements CreateAccountRepository {
+    async create (account: AccountParam): Promise<void> {}
+  }
+  return new CreateAccountRepositoryStub()
 }
