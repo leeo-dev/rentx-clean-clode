@@ -1,5 +1,5 @@
 import { AccountParam, CreateAccount } from '@/domain/protocols/create-account'
-import { EmailValidator } from '@/presentation/protocols/email-validator'
+import { EmailValidatorAdapter } from '@/validation/validators/email-validator'
 import { HttpRequest } from '@/presentation/protocols'
 import { Account } from '@/domain/models/account'
 import { LoadAccountByEmailRepository } from './data/protocols/load-account-by-email-repository'
@@ -38,8 +38,8 @@ export const mockHttpRequestAccount = (): HttpRequest => (
   }
 )
 
-export const mockEmailValidator = (): EmailValidator => {
-  class EmailValidatorStub implements EmailValidator {
+export const mockEmailValidator = (): EmailValidatorAdapter => {
+  class EmailValidatorStub implements EmailValidatorAdapter {
     async validate (email: string): Promise<Boolean> {
       return true
     }
